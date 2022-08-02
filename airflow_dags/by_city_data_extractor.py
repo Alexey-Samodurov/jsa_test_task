@@ -9,7 +9,6 @@ from airflow.operators.python import PythonOperator
 from jsa_test_task import get_filenames, months
 
 
-local_tz = pendulum.timezone('Europe/Moscow')
 default_args = {
     'start_date': datetime.now(),
     'retries': 5,
