@@ -38,7 +38,6 @@ with DAG(
         print(df.shape)
         return df
 
-
     def get_xlsx_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
         for file in filenames:
@@ -48,7 +47,6 @@ with DAG(
                 df['Склад'] = warehouse
         print(df.shape)
         return df
-
 
     def get_json_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -85,7 +83,6 @@ with DAG(
     def save_report(month: int):
         df = collect_data(month=month)
         df.to_excel(os.path.join('DATA_ROOT', f'result_repot_{month}.xlsx'), index=False)
-
 
     save_report_ = PythonOperator(
         task_id='save_report',
