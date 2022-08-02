@@ -60,7 +60,7 @@ with DAG(
         print(df.shape)
         return df
 
-    def preprocess_data(month: int, csv) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def preprocess_data(month: int) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         cols = ['Склад', 'Кол-во, шт', 'Стоимость, руб']
         for num, name in months.items():
             if month == num:
