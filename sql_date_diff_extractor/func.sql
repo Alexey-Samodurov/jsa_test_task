@@ -65,4 +65,4 @@ end
 $hour$ LANGUAGE plpgsql;
 
  --Тестовая функция
-select extract(epoch from count_work_day('2018-01-02 02:00:00.0','2018-01-02 14:01:00.0'))/3600 as date_diff;
+select extract(epoch from count_work_day('2022-01-02 02:00:00.0','2022-01-02 14:01:00.0'))/3600 as date_diff;
