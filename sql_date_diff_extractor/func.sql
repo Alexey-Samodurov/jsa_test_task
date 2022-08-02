@@ -1,10 +1,10 @@
 --Удаляем функцию если уже создана
 drop function if exists count_work_day(startTime timestamp,endTime timestamp);
 
---Удаляем таблицу с выходными и праздниками, есть есть
+--Удаляем таблицу с выходными и праздниками, если есть
 drop table if exists t_rest_day;
 
---Создаем таблицу с выходными и праздниками, есть нету
+--Создаем таблицу с выходными и праздниками, если нету
 create table if not exists t_rest_day(
     id serial primary key,
     start_time timestamp,
