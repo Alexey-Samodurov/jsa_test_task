@@ -93,13 +93,3 @@ with DAG(
         op_args=[ETl_MONTHS],
         sla=timedelta(seconds=10)
     )
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    get_json_data(get_filenames(DATA_ROOT, pattern='.json'))
