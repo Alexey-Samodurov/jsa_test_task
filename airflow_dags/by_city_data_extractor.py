@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+from typing import Tuple
 
 import pandas as pd
 import pendulum
@@ -57,7 +58,7 @@ with DAG(
         print(df.shape)
         return df
 
-    def preprocess_data(month: int) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def preprocess_data(month: int) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         cols = ['Склад', 'Кол-во, шт', 'Стоимость, руб']
         for num, name in months.items():
             if month == num:
@@ -67,13 +68,13 @@ with DAG(
                 xlsx_data = get_xlsx_data(get_filenames(DATA_ROOT, pattern=f'{name}.xlsx'))
                 xlsx_data['Стоимость, руб'] = xlsx_data['Кол-во, шт'] * xlsx_data['Цена, ед.']
                 xlsx_data = xlsx_data[cols]
-                json_data = get_json_data(get_filenames(DATA_ROOT, pattern=f'{name}.xlsx'))
+                json_data = get_json_data(get_filenames(DATA_ROOT, pattern=f'{name}.json'))
                 json_data['Стоимость, руб'] = json_data['Кол-во, шт'] * json_data['Цена, ед.']
                 json_data = json_data[cols]
                 return csv_data, xlsx_data, json_data
 
     def collect_data(month: int) -> pd.DataFrame:
-        tot_df = pd.DataFrame
+        tot_df = pd.DataFrame()
         csv_data, xlsx_data, json_data = preprocess_data(month=month)
         for item in [csv_data, xlsx_data, json_data]:
             tot_df = tot_df.append(item)
@@ -81,7 +82,7 @@ with DAG(
 
     def save_report(month: int):
         df = collect_data(month=month)
-        df.to_excel(os.path.join('DATA_ROOT', f'result_repot_{month}.xlsx'), index=False)
+        df.to_excel(os.path.join(DATA_ROOT, f'result_repot_{month}.xlsx'), index=False)
 
     save_report_ = PythonOperator(
         task_id='save_report',
