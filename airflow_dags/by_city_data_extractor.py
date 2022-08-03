@@ -81,7 +81,7 @@ with DAG(
         return tot_df
 
     def save_report(month: int):
-        df = collect_data(month=month)
+        df = collect_data(month=int(month))
         df.to_excel(os.path.join(DATA_ROOT, f'result_repot_{month}.xlsx'), index=False)
 
     save_report_ = PythonOperator(
