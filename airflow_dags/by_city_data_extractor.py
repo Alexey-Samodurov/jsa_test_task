@@ -32,9 +32,10 @@ with DAG(
         df = pd.DataFrame()
         for file in filenames:
             if not pd.read_csv(file).empty:
-                df = df.append(pd.read_csv(file))
+                tmp_df = pd.read_csv(file)
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
-                df['Склад'] = warehouse
+                tmp_df['Склад'] = warehouse
+                df = df.append(tmp_df)
         print(df.shape)
         if not df.empty:
             return df
@@ -45,9 +46,10 @@ with DAG(
         df = pd.DataFrame()
         for file in filenames:
             if not pd.read_excel(file).empty:
-                df = df.append(pd.read_excel(file))
+                tmp_df = pd.read_excel(file, sheet_name='Sheet1')
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
-                df['Склад'] = warehouse
+                tmp_df['Склад'] = warehouse
+                df = df.append(tmp_df)
         print(df.shape)
         if not df.empty:
             return df
@@ -58,9 +60,10 @@ with DAG(
         df = pd.DataFrame()
         for file in filenames:
             if not pd.read_json(file).empty:
-                df = df.append(pd.read_json(file))
+                tmp_df = pd.read_json(file)
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
-                df['Склад'] = warehouse
+                tmp_df['Склад'] = warehouse
+                df = df.append(tmp_df)
         print(df.shape)
         if not df.empty:
             return df
