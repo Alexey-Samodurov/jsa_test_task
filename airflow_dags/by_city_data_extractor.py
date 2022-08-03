@@ -38,6 +38,8 @@ with DAG(
         print(df.shape)
         if not df.empty:
             return df
+        else:
+            raise FileNotFoundError('file not found or empty')
 
     def get_xlsx_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -49,6 +51,8 @@ with DAG(
         print(df.shape)
         if not df.empty:
             return df
+        else:
+            raise FileNotFoundError('file not found or empty')
 
     def get_json_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -60,6 +64,8 @@ with DAG(
         print(df.shape)
         if not df.empty:
             return df
+        else:
+            raise FileNotFoundError('file not found or empty')
 
     def preprocess_data(month: int) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         cols = ['Склад', 'Кол-во, шт', 'Стоимость, руб']
