@@ -36,7 +36,8 @@ with DAG(
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
                 df['Склад'] = warehouse
         print(df.shape)
-        return df
+        if not df.empty:
+            return df
 
     def get_xlsx_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -46,7 +47,8 @@ with DAG(
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
                 df['Склад'] = warehouse
         print(df.shape)
-        return df
+        if not df.empty:
+            return df
 
     def get_json_data(filenames: list) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -56,7 +58,8 @@ with DAG(
                 warehouse = file.split(os.sep)[len(file.split(os.sep)) - 1].split('_')[0]
                 df['Склад'] = warehouse
         print(df.shape)
-        return df
+        if not df.empty:
+            return df
 
     def preprocess_data(month: int) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         cols = ['Склад', 'Кол-во, шт', 'Стоимость, руб']
