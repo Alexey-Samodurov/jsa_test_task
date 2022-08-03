@@ -74,12 +74,15 @@ with DAG(
                 csv_data = get_csv_data(get_filenames(DATA_ROOT, pattern=f'{name}.csv'))
                 csv_data['Стоимость, руб'] = csv_data['Кол-во, шт'] * csv_data['Цена, ед.']
                 csv_data = csv_data[cols]
+                csv_data = csv_data.groupby('Склад', as_index=False)['Кол-во, шт', 'Стоимость, руб'].sum()
                 xlsx_data = get_xlsx_data(get_filenames(DATA_ROOT, pattern=f'{name}.xlsx'))
                 xlsx_data['Стоимость, руб'] = xlsx_data['Кол-во, шт'] * xlsx_data['Цена, ед.']
                 xlsx_data = xlsx_data[cols]
+                xlsx_data = xlsx_data.groupby('Склад', as_index=False)['Кол-во, шт', 'Стоимость, руб'].sum()
                 json_data = get_json_data(get_filenames(DATA_ROOT, pattern=f'{name}.json'))
                 json_data['Стоимость, руб'] = json_data['Кол-во, шт'] * json_data['Цена, ед.']
                 json_data = json_data[cols]
+                json_data = json_data.groupby('Склад', as_index=False)['Кол-во, шт', 'Стоимость, руб'].sum()
                 return csv_data, xlsx_data, json_data
 
     def collect_data(month: int) -> pd.DataFrame:
