@@ -27,7 +27,7 @@ SQL
 Выходные дни по производственному календарю за 2022 - <br>
 http://www.consultant.ru/law/ref/calendar/proizvodstvennye/2022/
 
-
+# HOW TO RUN
 ### AIRFLOW DAG находится в папке airflow_dags:
 1. Необходимо установить зависимости из requirements.txt
 2. Необходимо добавить переменную окружения `PYTHONPATH` с путем до репозитория
