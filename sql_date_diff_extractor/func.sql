@@ -1,68 +1,61 @@
---Удаляем функцию если уже создана
-drop function if exists count_work_day(startTime timestamp,endTime timestamp);
-
 --Удаляем таблицу с выходными и праздниками, если есть
+drop table if exists work_minutes;
+
+--Создаем таблицу в которой генерируем поминутный диапазон дат за 2022
+create table work_minutes ( work_minute timestamp primary key );
+
+--Генерируем поминутный диапазон дат за 2022
+insert into work_minutes
+select work_minute
+from (
+select
+    generate_series(timestamp '2022-01-01 00:00:00', timestamp '2022-12-31 11:59:00', '1 minute') as work_minute
+) t
+where extract(isodow from work_minute) < 6 -- захардкодим субботу и воскресенье
+  and cast(work_minute as time) between time '09:30' and time '18:30' --захардкодим рабочие часы
+;
+
+--Удаляем табличку с праздничными днями
 drop table if exists t_rest_day;
 
---Создаем таблицу с выходными и праздниками, если нету
-create table if not exists t_rest_day(
-    id serial primary key,
-    start_time timestamp,
-    end_time timestamp
-);
+--Создаем табличку с праздничными днями
+create table t_rest_day(dt date);
 
---Вставляем значения с праздиками и выходными
-insert into t_rest_day(start_time, end_time)
-values('2022-01-01'::date, '2022-01-03'::date);
---И так далее, общий смысл перебрать все даты с выходными
-insert into t_rest_day(start_time, end_time)
-values('2022-01-04'::date, '2022-01-05'::date);
+--Вставляем значения с праздиками
+insert into t_rest_day(dt)
+select generate_series(date '2022-01-01', date '2022-01-09', '1 day');
+--
+insert into t_rest_day(dt)
+select generate_series(date '2022-02-23', date '2022-02-23', '1 day');
+--
+insert into t_rest_day(dt)
+select generate_series(date '2022-03-07', date '2022-03-08', '1 day');
+--
+insert into t_rest_day(dt)
+select generate_series(date '2022-05-02', date '2022-05-03', '1 day');
+--
+insert into t_rest_day(dt)
+select generate_series(date '2022-06-13', date '2022-06-13', '1 day');
+--
+insert into t_rest_day(dt)
+select generate_series(date '2022-11-04', date '2022-11-04', '1 day');
 
- --Создаем функцию
-create or replace function count_work_day(startTime timestamp, endTime timestamp)
-returns interval as $hour$
-declare
-	start_date timestamp := date_trunc('day',startTime);
-	end_date timestamp := date_trunc('day',endTime);
-	rest_cost interval := '0 day';
-	count_day int := 0;
-    count_day_temp int :=0;
-	start_time_temp timestamp := startTime;
-	end_time_temp timestamp := endTime;
-begin
-	--тот же день
-	if(start_date = end_date) then
-		select count(1) into count_day from t_rest_day t where t.start_time <= startTime and t.end_time > endTime;
-		if(count_day > 0) then
-			return '0 day';
-		else
-			return endTime - startTime;
-		end if;
-	end if;
-	 -- И время начала, и время окончания находятся в периоде выходного.
-	select count(t.id) into count_day_temp from t_rest_day t where t.start_time <= startTime and t.end_time > endTime;
-	if(count_day_temp = 1) then
-		return '0 day';
-	end if;
-	 -- Не в тот же день
-	while date_trunc('day',start_time_temp) <= end_time_temp loop
-		select count(1) into count_day from t_rest_day t where t.start_time <= start_time_temp and t.end_time > start_time_temp;
-		if(count_day > 0) then
-			if(date_trunc('day',start_time_temp) = start_date) then
-				rest_cost = rest_cost + (start_date + '1 day' - startTime);
-			elseif(date_trunc('day',start_time_temp) = end_date) then
-				rest_cost = rest_cost + (endTime - end_date);
-			else
-				rest_cost = rest_cost + '1 day';
-			end if;
-			--raise notice 'rest_cost :%',rest_cost;
-		end if;
-		start_time_temp = start_time_temp + '1 day';
-		--raise notice 'start_time_temp :%',start_time_temp;
-	end loop;
-	return age(endTime,startTime) - rest_cost;
-end
-$hour$ LANGUAGE plpgsql;
+
+--Создаем функцию
+create or replace function work_hour_extrator(start_date timestamp, end_date timestamp)
+returns decimal as $$
+    select
+        count(*) / 60.0
+    from work_minutes
+    where work_minute between start_date and end_date
+    and start_date::date not in (
+        select dt from t_rest_day
+        )
+    and end_date:: date not in (
+        select dt from t_rest_day
+        )
+    ;
+$$ language sql;
 
  --Тестовая функция
-select extract(epoch from count_work_day('2022-01-02 02:00:00.0','2022-01-02 14:01:00.0'))/3600 as date_diff;
+select work_hour_extrator('2022-01-10 09:30:00.0', '2022-01-10 18:01:00.0');
